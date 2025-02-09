@@ -18,10 +18,29 @@ const ColorSelector = () => {
     };
 
     const [isLandscape, setIsLandscape] = useState(false);
+    const [location, setLocation] = useState<{ latitude: number, longitude: number } | null>(null);
+
+    const getLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setLocation({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                });
+            });
+        }
+    }
 
     const copyToClipboard = (colors: string[]) => {
         const datetime = new Date().toLocaleString();
-        const textToCopy = `${datetime} - ${colors.join(', ')}`;
+        let textToCopy = datetime;
+        getLocation();
+        if (location) {
+            textToCopy += ` - Location: (${location.latitude}, ${location.longitude})`;
+        }
+        if (colors.length > 0) {
+            textToCopy += ' - Colors: ' + colors.join(', ');
+        }
         navigator.clipboard.writeText(textToCopy).then(() => {
             setIsCopied(true);
             setTimeout(() => setIsCopied(false), 1000);
@@ -41,7 +60,7 @@ const ColorSelector = () => {
 
         window.addEventListener('resize', handleOrientationChange);
         handleOrientationChange();
-
+        getLocation();
         return () => {
             window.removeEventListener('resize', handleOrientationChange);
         };
