@@ -18,7 +18,7 @@ interface SavedColors {
 
 
 const ColorSelector = () => {
-    const [color, setColor] = useState('#abc123');
+    const [color, setColor] = useState('#000000');
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [isCopied, setIsCopied] = useState(false);
     const [retrievedColors, setRetrievedColors] = useState<SavedColors[]>([]);
