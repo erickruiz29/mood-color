@@ -20,7 +20,8 @@ const ColorSelector = () => {
     const [isLandscape, setIsLandscape] = useState(false);
 
     const copyToClipboard = (colors: string[]) => {
-        const textToCopy = colors.join(', ');
+        const datetime = new Date().toLocaleString();
+        const textToCopy = `${datetime} - ${colors.join(', ')}`;
         navigator.clipboard.writeText(textToCopy).then(() => {
             setIsCopied(true);
             setTimeout(() => setIsCopied(false), 1000);
