@@ -22,6 +22,7 @@ const ColorSelector = () => {
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [isCopied, setIsCopied] = useState(false);
     const [retrievedColors, setRetrievedColors] = useState<SavedColors[]>([]);
+    const [colorsCopy, setColorsCopy] = useState<SavedColors[]>(JSON.parse(JSON.stringify(retrievedColors)));
 
     const handleChange = (color: ColorResult) => {
         setColor(color.hex);
@@ -59,6 +60,33 @@ const ColorSelector = () => {
         });
     };
 
+    const downloadColors = (filename: string) => {
+        setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
+        const datetime = new Date().toLocaleString();
+        const element = document.createElement("a");
+        const file = new Blob([JSON.stringify(retrievedColors, null, 2)], { type: 'application/json' });
+        element.href = URL.createObjectURL(file);
+        const sanitizedDatetime = datetime.replace(/\s+/g, '');
+        element.download = `${filename}-${sanitizedDatetime}.json`;
+        if (navigator.userAgent.includes('FxiOS')) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                window.location.href = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    };
+    
+    const handleSaveAs = () => {
+        const filename = prompt('Enter a filename:', 'colors');
+        if (filename) {
+            downloadColors(filename);
+        }
+    };
+
     useEffect(() => {
         const handleOrientationChange = () => {
             if (window.innerWidth > window.innerHeight) {
@@ -72,6 +100,7 @@ const ColorSelector = () => {
         handleOrientationChange();
         getLocation();
         setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
+        setColorsCopy(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
         return () => {
             window.removeEventListener('resize', handleOrientationChange);
         };
@@ -115,49 +144,31 @@ const ColorSelector = () => {
                         <CopyIcon style={{ width: '50px', height: '50px' }} />)}
                 </div>
                 <div onClick={() => {
-                    //const retrievedColors: SavedColors[] = JSON.parse(localStorage.getItem('colorsStorage') ?? "[]");
                     setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
                     const datetime = new Date().toLocaleString();
                     const loc = location ? `(${location.latitude}, ${location.longitude})` : '';
                     retrievedColors.push({ colors: selectedColors, location: [loc], datetime });
                     localStorage.setItem('colorsStorage', JSON.stringify(retrievedColors));
                     setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
+                    setColorsCopy(JSON.parse(JSON.stringify(retrievedColors)));
                 }
                 } style={{ cursor: 'pointer', marginLeft: '1rem' }}>
                     <SaveIcon style={{ width: '50px', height: '50px', }} />
                 </div>
                 <div onClick={() => {
-                    const colorsCopy = JSON.parse(JSON.stringify(retrievedColors));
                     const lastColor = colorsCopy.pop() ?? { colors: [] };
                     setSelectedColors(lastColor.colors);
                 }} style={{ cursor: 'pointer', marginLeft: '1rem' }}>
                     <LoadIcon style={{ width: '50px', height: '50px', }} />
                 </div>
-                <div onClick={() => {
-                    setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
-                    const datetime = new Date().toLocaleString();
-                    const element = document.createElement("a");
-                    const file = new Blob([JSON.stringify(retrievedColors, null, 2)], { type: 'application/json' });
-                    element.href = URL.createObjectURL(file);
-                    const sanitizedDatetime = datetime.replace(/\s+/g, '');
-                    element.download = `colors-${sanitizedDatetime}.json`;
-                    if (navigator.userAgent.includes('FxiOS')) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            window.location.href = reader.result as string;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                    document.body.appendChild(element);
-                    element.click();
-                    document.body.removeChild(element);
-                }} style={{ cursor: 'pointer', marginLeft: '1rem' }}>
+                <div onClick={handleSaveAs} style={{ cursor: 'pointer', marginLeft: '1rem' }}>
                     <DownloadIcon style={{ width: '50px', height: '50px', }} />
                 </div>
                 <div onClick={() => {
                     if (window.confirm('Are you sure you want to delete all saved colors?')) {
                         localStorage.setItem('colorsStorage', JSON.stringify([]));
                         setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
+                        setColorsCopy(JSON.parse(JSON.stringify(retrievedColors)));
                     }
                 }} style={{ cursor: 'pointer', marginLeft: '1rem' }}>
                     <DeleteIcon style={{ width: '50px', height: '50px', }} />
