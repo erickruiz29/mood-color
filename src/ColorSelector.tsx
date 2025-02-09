@@ -63,7 +63,7 @@ const ColorSelector = () => {
             <ChromePicker
                 color={color}
                 onChange={handleChange}
-                styles={{ default: { picker: { width: '100%', maxWidth: '500px' } } }}
+                styles={{ default: { picker: { width: '100%', maxWidth: '500px' }} }}
             />
         </div >
     );
