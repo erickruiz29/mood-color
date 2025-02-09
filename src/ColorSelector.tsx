@@ -68,13 +68,6 @@ const ColorSelector = () => {
         element.href = URL.createObjectURL(file);
         const sanitizedDatetime = datetime.replace(/\s+/g, '');
         element.download = `${filename}-${sanitizedDatetime}.json`;
-        if (navigator.userAgent.includes('FxiOS')) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                window.location.href = reader.result as string;
-            };
-            reader.readAsDataURL(file);
-        }
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
