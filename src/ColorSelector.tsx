@@ -115,7 +115,8 @@ const ColorSelector = () => {
                         <CopyIcon style={{ width: '50px', height: '50px' }} />)}
                 </div>
                 <div onClick={() => {
-                    const retrievedColors: SavedColors[] = JSON.parse(localStorage.getItem('colorsStorage') ?? "[]");
+                    //const retrievedColors: SavedColors[] = JSON.parse(localStorage.getItem('colorsStorage') ?? "[]");
+                    setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
                     const datetime = new Date().toLocaleString();
                     const loc = location ? `(${location.latitude}, ${location.longitude})` : '';
                     retrievedColors.push({ colors: selectedColors, location: [loc], datetime });
@@ -126,7 +127,8 @@ const ColorSelector = () => {
                     <SaveIcon style={{ width: '50px', height: '50px', }} />
                 </div>
                 <div onClick={() => {
-                    const lastColor = retrievedColors.pop() ?? { colors: [] };
+                    const colorsCopy = JSON.parse(JSON.stringify(retrievedColors));
+                    const lastColor = colorsCopy.pop() ?? { colors: [] };
                     setSelectedColors(lastColor.colors);
                 }} style={{ cursor: 'pointer', marginLeft: '1rem' }}>
                     <LoadIcon style={{ width: '50px', height: '50px', }} />
@@ -139,6 +141,13 @@ const ColorSelector = () => {
                     element.href = URL.createObjectURL(file);
                     const sanitizedDatetime = datetime.replace(/\s+/g, '');
                     element.download = `colors-${sanitizedDatetime}.json`;
+                    if (navigator.userAgent.includes('FxiOS')) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            window.location.href = reader.result as string;
+                        };
+                        reader.readAsDataURL(file);
+                    }
                     document.body.appendChild(element);
                     element.click();
                     document.body.removeChild(element);
