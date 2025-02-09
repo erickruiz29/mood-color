@@ -64,8 +64,7 @@ const ColorSelector = () => {
         setRetrievedColors(JSON.parse(localStorage.getItem('colorsStorage') ?? "[]"));
         const datetime = new Date().toLocaleString();
         const element = document.createElement("a");
-        const file = new Blob([JSON.stringify(retrievedColors, null, 2)], { type: 'application/json' });
-        element.href = URL.createObjectURL(file);
+        element.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retrievedColors))
         const sanitizedDatetime = datetime.replace(/\s+/g, '');
         element.download = `${filename}-${sanitizedDatetime}.json`;
         document.body.appendChild(element);
