@@ -35,13 +35,8 @@ const ColorSelector = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: isLandscape ? 'row' : 'column', alignItems: 'center' }}>
-            <ChromePicker
-                color={color}
-                onChange={handleChange}
-                styles={{ default: { picker: { width: '100%', maxWidth: '500px' } } }}
-            />
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: '1rem' }}>
-                <div style={{ width: '100px', height: '100px', backgroundColor: color }} onClick={() => { selectedColors.push(color); setSelectedColors([...selectedColors]); }}></div> 
+                <div style={{ width: '100px', height: '100px', backgroundColor: color }} onClick={() => { selectedColors.push(color); setSelectedColors([...selectedColors]); }}></div>
             </div>
             <div style={{ display: 'flex', flexDirection: isLandscape ? 'column' : 'row', alignItems: 'center', flexWrap: 'nowrap', width: isLandscape ? '100px' : '100%', height: isLandscape ? '90vh' : '100px', padding: '1rem' }}>
                 {(selectedColors).map((curColor) => {
@@ -65,6 +60,11 @@ const ColorSelector = () => {
                         }>{curColor}</div>)
                 })}
             </div>
+            <ChromePicker
+                color={color}
+                onChange={handleChange}
+                styles={{ default: { picker: { width: '100%', maxWidth: '500px' } } }}
+            />
         </div >
     );
 };
